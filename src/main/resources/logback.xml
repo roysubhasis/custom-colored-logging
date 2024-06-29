@@ -1,0 +1,44 @@
+<configuration>
+    <!--Configuration : Host System Name-->
+    <contextName>${HOSTNAME}</contextName>
+    <!--Configuration : Custom Colour -->
+    <conversionRule conversionWord="colour" converterClass="com.custom.colour.util.CustomColourUtil"/>
+    <!--Configuration : Console log -->
+    <appender name="CONSOLE-LOGGING" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+               %d{yyyy-MM-dd HH:mm:ss.SSS} %magenta([%contextName]) [%thread] %colour([%-5level]) %cyan([%logger{35}:%M]) - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--Configuration : Rolling File Log based on Size and Time -->
+    <property name="LOG_FILE" value="logs/stack-overflow-query.log"/>
+
+    <appender name="ROLLING-FILE-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/stack-overflow-query-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <!-- Configuration : Single Log file size to Max 50KB -->
+            <maxFileSize>50KB</maxFileSize>
+            <!-- Configuration : Total Log file size to 500KB, old files will get deleted once totalSizeCap  reached-->
+            <totalSizeCap>500KB</totalSizeCap>
+            <!-- Configuration : Max 5 days log files will be stored -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.custom.colour.msg.print" level="TRACE" additivity="false">
+        <appender-ref ref="ROLLING-FILE-LOG"/>
+        <appender-ref ref="CONSOLE-LOGGING"/>
+    </logger>
+
+    <root level="error">
+        <appender-ref ref="ROLLING-FILE-LOG"/>
+    </root>
+
+</configuration>
